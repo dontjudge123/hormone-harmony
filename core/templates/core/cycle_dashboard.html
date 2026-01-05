@@ -18,12 +18,14 @@
     {% include 'core/includes/button.html' with btn_text='← Back to Symptom Tracker' btn_href= '/cycle/'|add:cycle.id|add:'/symptoms/' btn_type='link' variant='secondary' %}
 </div>
 
+<script id="chart-data" type="application/json">{{ chart_data_json|safe }}</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const dates = {{ dates|safe }};
-    const cramps = {{ cramps|safe }};
-    const energy = {{ energy|safe }};
-    const moodCounts = {{ mood_counts|safe }};
+    const chartData = JSON.parse(document.getElementById('chart-data').textContent || '{}');
+    const dates = chartData.dates || [];
+    const cramps = chartData.cramps || [];
+    const energy = chartData.energy || [];
+    const moodCounts = chartData.mood_counts || {};
 
     // Line chart for Cramps and Energy
     const ctx1 = document.getElementById('crampsEnergyChart').getContext('2d');

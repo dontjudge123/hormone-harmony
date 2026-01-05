@@ -67,11 +67,20 @@ def cycle_dashboard(request, cycle_id):
     for mood_choice in Symptom._meta.get_field('mood').choices:
         mood_counts[mood_choice[0]] = symptoms.filter(mood=mood_choice[0]).count()
 
+    # Prepare a single JSON payload for client-side charts to avoid raw template injection in JS
+    chart_payload = {
+        'dates': dates,
+        'cramps': cramps,
+        'energy': energy,
+        'mood_counts': mood_counts,
+    }
+
     context = {
         'cycle': cycle,
         'dates': json.dumps(dates, cls=DjangoJSONEncoder),
         'cramps': json.dumps(cramps),
         'energy': json.dumps(energy),
         'mood_counts': json.dumps(mood_counts),
+        'chart_data_json': json.dumps(chart_payload, cls=DjangoJSONEncoder),
     }
     return render(request, 'core/cycle_dashboard.html', context)
