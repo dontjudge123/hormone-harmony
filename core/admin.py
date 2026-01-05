@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import PeriodCycle
 
-# Register your models here.
+
+@admin.register(PeriodCycle)
+class PeriodCycleAdmin(admin.ModelAdmin):
+	list_display = ('user', 'start_date', 'cycle_length')
+	list_filter = ('user',)
