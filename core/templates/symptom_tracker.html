@@ -8,8 +8,8 @@
         {% csrf_token %}
         {{ form.as_p }}
         <div class="flex items-center gap-3">
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">Add Symptom</button>
-            <a href="{% url 'core:cycle_dashboard' cycle.id %}" class="text-sm text-gray-600 hover:text-purple-600">View Dashboard →</a>
+            {% include 'core/includes/button.html' with btn_text='Add Symptom' btn_type='submit' variant='primary' %}
+            {% include 'core/includes/button.html' with btn_text='View Dashboard →' btn_href=cycle.get_absolute_url|default:'/cycle/'|add:cycle.id|add:'/dashboard/' btn_type='link' variant='secondary' extra_classes='text-sm' %}
         </div>
     </form>
 

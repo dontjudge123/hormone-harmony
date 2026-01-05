@@ -12,9 +12,7 @@
         <canvas id="moodChart" class="bg-white p-4 rounded shadow"></canvas>
     </div>
 
-    <a href="{% url 'core:symptom_tracker' cycle.id %}" class="inline-flex items-center px-3 py-2 text-sm text-gray-700 bg-white border rounded hover:bg-gray-50">
-        ← Back to Symptom Tracker
-    </a>
+    {% include 'core/includes/button.html' with btn_text='← Back to Symptom Tracker' btn_href= '/cycle/'|add:cycle.id|add:'/symptoms/' btn_type='link' variant='secondary' %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

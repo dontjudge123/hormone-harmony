@@ -1,0 +1,17 @@
+{# Reusable button include
+Variables expected (use with):
+- btn_text (required)
+- btn_href (optional, for link buttons)
+- btn_type ("submit" or "button" or "link") default: "submit"
+- variant ("primary" or "secondary" or "ghost") default: "primary"
+- extra_classes (optional string)
+
+Usage:
+{% include 'core/includes/button.html' with btn_text='Save' btn_type='submit' variant='primary' %}
+%}
+
+{% if btn_type == 'link' and btn_href %}
+<a href="{{ btn_href }}" class="{% if variant == 'primary' %}inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500{% elif variant == 'secondary' %}inline-flex items-center px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300{% else %}inline-flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50{% endif %} {% if extra_classes %}{{ extra_classes }}{% endif %}">{{ btn_text }}</a>
+{% else %}
+<button type="{{ btn_type|default:'submit' }}" class="{% if variant == 'primary' %}inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500{% elif variant == 'secondary' %}inline-flex items-center px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300{% else %}inline-flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50{% endif %} {% if extra_classes %}{{ extra_classes }}{% endif %}">{{ btn_text }}</button>
+{% endif %}
