@@ -47,3 +47,31 @@ def symptom_tracker(request, cycle_id):
 
     symptoms = cycle.symptoms.order_by('-date')
     return render(request, 'symptom_tracker.html', {'cycle': cycle, 'form': form, 'symptoms': symptoms})
+
+from django.db.models import Avg
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+
+@login_required
+def cycle_dashboard(request, cycle_id):
+    cycle = get_object_or_404(PeriodCycle, id=cycle_id, user=request.user)
+    symptoms = cycle.symptoms.order_by('date')
+
+    # Prepare data for charts
+    dates = [symptom.date.strftime("%Y-%m-%d") for symptom in symptoms]
+    cramps = [symptom.cramps for symptom in symptoms]
+    energy = [symptom.energy for symptom in symptoms]
+
+    # Mood count
+    mood_counts = {}
+    for mood_choice in Symptom._meta.get_field('mood').choices:
+        mood_counts[mood_choice[0]] = symptoms.filter(mood=mood_choice[0]).count()
+
+    context = {
+        'cycle': cycle,
+        'dates': json.dumps(dates, cls=DjangoJSONEncoder),
+        'cramps': json.dumps(cramps),
+        'energy': json.dumps(energy),
+        'mood_counts': json.dumps(mood_counts),
+    }
+    return render(request, 'core/cycle_dashboard.html', context)

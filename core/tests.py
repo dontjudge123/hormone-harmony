@@ -67,3 +67,35 @@ class TemplateTagTests(TestCase):
         tpl = Template('{% load form_tags %}{{ form.name|add_class:"new" }}')
         rendered = tpl.render(Context({'form': form}))
         self.assertIn('class="new"', rendered)
+
+
+class SymptomTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user1 = User.objects.create_user(username='user1', password='pass')
+        self.user2 = User.objects.create_user(username='user2', password='pass')
+        self.cycle = PeriodCycle.objects.create(user=self.user1, start_date='2024-01-01', cycle_length=28)
+
+    def test_owner_can_add_symptom(self):
+        self.client.login(username='user1', password='pass')
+        url = reverse('core:symptom_tracker', args=[self.cycle.id])
+        response = self.client.post(url, {'date': '2024-01-02', 'mood': 'Happy', 'cramps': 3, 'energy': 6})
+        self.assertEqual(response.status_code, 302)
+        from .models import Symptom
+        self.assertTrue(Symptom.objects.filter(cycle=self.cycle, mood='Happy').exists())
+
+    def test_non_owner_cannot_access(self):
+        self.client.login(username='user2', password='pass')
+        url = reverse('core:cycle_dashboard', args=[self.cycle.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        url2 = reverse('core:symptom_tracker', args=[self.cycle.id])
+        response2 = self.client.post(url2, {'date': '2024-01-03', 'mood': 'Happy', 'cramps': 3, 'energy': 5})
+        self.assertEqual(response2.status_code, 404)
+
+    def test_owner_can_view_dashboard(self):
+        self.client.login(username='user1', password='pass')
+        url = reverse('core:cycle_dashboard', args=[self.cycle.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('dates', response.context)
