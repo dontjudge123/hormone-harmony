@@ -31,3 +31,22 @@ def period_tracker(request):
         predicted_next_period = (last.start_date + timedelta(days=last.cycle_length)).isoformat()
 
     return render(request, "period_tracker.html", {'form': form, 'cycles': cycles, 'predicted_next_period': predicted_next_period})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import PeriodCycle, Symptom
+from .forms import SymptomForm
+
+def symptom_tracker(request, cycle_id):
+    cycle = get_object_or_404(PeriodCycle, id=cycle_id)
+    if request.method == "POST":
+        form = SymptomForm(request.POST)
+        if form.is_valid():
+            symptom = form.save(commit=False)
+            symptom.cycle = cycle
+            symptom.save()
+            return redirect('symptom_tracker', cycle_id=cycle.id)
+    else:
+        form = SymptomForm()
+
+    symptoms = cycle.symptoms.order_by('-date')
+    return render(request, 'core/symptom_tracker.html', {'cycle': cycle, 'form': form, 'symptoms': symptoms})

@@ -1,26 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Period Tracker</title>
-</head>
-<body>
-    <h2>Period Tracker</h2>
-    {% if user.is_authenticated %}
-        <form method="post">
+{% load form_tags %}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-4">
+
+    <h1 class="text-3xl font-bold text-center mb-6 text-purple-600">Period Tracker</h1>
+
+    <!-- Form Card -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-purple-500">Add New Cycle</h2>
+        <form method="post" class="space-y-4">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save</button>
+            <div>
+                {{ form.start_date.label_tag }}<br>
+                {{ form.start_date|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <div>
+                {{ form.end_date.label_tag }}<br>
+                {{ form.end_date|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <div>
+                {{ form.cycle_length.label_tag }}<br>
+                {{ form.cycle_length|add_class:"border rounded p-2 w-full" }}
+            </div>
+            <button type="submit" class="bg-purple-500 text-white font-semibold px-4 py-2 rounded hover:bg-purple-600">Save</button>
         </form>
-    {% else %}
-        <p>Please <a href="/admin/login/">log in</a> to add a period cycle.</p>
+    </div>
+
+    <!-- Previous Cycles Table -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-purple-500">Previous Cycles</h2>
+        {% if cycles %}
+        <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-purple-50">
+                <tr>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Start Date</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">End Date</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Cycle Length (days)</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for cycle in cycles %}
+                <tr class="hover:bg-purple-50">
+                    <td class="px-4 py-2">{{ cycle.start_date }}</td>
+                    <td class="px-4 py-2">{{ cycle.end_date }}</td>
+                    <td class="px-4 py-2">{{ cycle.cycle_length }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500">No period data recorded yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Predicted Next Period -->
+    {% if predicted_next_period %}
+    <div class="bg-purple-50 border-l-4 border-purple-500 text-purple-700 p-4 rounded-lg">
+        <p class="font-semibold">Predicted Next Period:</p>
+        <p class="text-lg">{{ predicted_next_period }}</p>
+    </div>
     {% endif %}
 
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-</body>
-</html>
+</div>
+{% endblock %}

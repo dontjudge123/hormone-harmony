@@ -39,3 +39,15 @@ class PeriodCycleForm(forms.ModelForm):
                 cleaned['cycle_length'] = delta
 
         return cleaned
+from .models import Symptom
+
+class SymptomForm(forms.ModelForm):
+    class Meta:
+        model = Symptom
+        fields = ['date', 'mood', 'cramps', 'energy']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'border p-2 rounded'}),
+            'mood': forms.Select(attrs={'class': 'border p-2 rounded'}),
+            'cramps': forms.NumberInput(attrs={'class': 'border p-2 rounded', 'min': 0, 'max': 10}),
+            'energy': forms.NumberInput(attrs={'class': 'border p-2 rounded', 'min': 0, 'max': 10}),
+        }

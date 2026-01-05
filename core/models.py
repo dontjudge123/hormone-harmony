@@ -25,3 +25,19 @@ class PeriodCycle(models.Model):
         return start + timedelta(days=self.cycle_length - 1)
 
 
+class Symptom(models.Model):
+    cycle = models.ForeignKey(PeriodCycle, on_delete=models.CASCADE, related_name='symptoms')
+    date = models.DateField()
+    mood_choices = [
+        ('Happy', 'Happy'),
+        ('Sad', 'Sad'),
+        ('Anxious', 'Anxious'),
+        ('Tired', 'Tired'),
+        ('Irritable', 'Irritable'),
+    ]
+    mood = models.CharField(max_length=20, choices=mood_choices)
+    cramps = models.IntegerField(default=0)  # scale 0-10
+    energy = models.IntegerField(default=5)  # scale 0-10
+
+    def __str__(self):
+        return f"{self.date} - {self.mood}"
