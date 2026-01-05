@@ -2,6 +2,9 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto p-4">
+    {% url 'core:period' as period_url %}
+    {% include 'core/includes/breadcrumbs.html' with parent_url=period_url parent_text='Period Tracker' current_text='Dashboard' %}
+
     <h2 class="text-2xl font-bold mb-4">Dashboard for Cycle #{{ cycle.id }}</h2>
 
     <div class="mb-6">

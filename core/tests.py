@@ -99,3 +99,16 @@ class SymptomTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('dates', response.context)
+
+    def test_symptom_tracker_ui_fields_and_breadcrumbs(self):
+        self.client.login(username='user1', password='pass')
+        url = reverse('core:symptom_tracker', args=[self.cycle.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="date"')
+        self.assertContains(response, 'name="mood"')
+        self.assertContains(response, 'Add Symptom')
+        self.assertContains(response, 'Period Tracker')
+        # table headers
+        self.assertContains(response, 'Date')
+        self.assertContains(response, 'Mood')
