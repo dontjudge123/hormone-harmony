@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import PeriodCycleForm
-from .models import PeriodCycle
+from .forms import PeriodCycleForm, SymptomForm
+from .models import PeriodCycle, Symptom
 from datetime import timedelta
 
 
@@ -32,21 +32,18 @@ def period_tracker(request):
 
     return render(request, "period_tracker.html", {'form': form, 'cycles': cycles, 'predicted_next_period': predicted_next_period})
 
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import PeriodCycle, Symptom
-from .forms import SymptomForm
-
+@login_required
 def symptom_tracker(request, cycle_id):
-    cycle = get_object_or_404(PeriodCycle, id=cycle_id)
+    cycle = get_object_or_404(PeriodCycle, id=cycle_id, user=request.user)
     if request.method == "POST":
         form = SymptomForm(request.POST)
         if form.is_valid():
             symptom = form.save(commit=False)
             symptom.cycle = cycle
             symptom.save()
-            return redirect('symptom_tracker', cycle_id=cycle.id)
+            return redirect('core:symptom_tracker', cycle_id=cycle.id)
     else:
         form = SymptomForm()
 
     symptoms = cycle.symptoms.order_by('-date')
-    return render(request, 'core/symptom_tracker.html', {'cycle': cycle, 'form': form, 'symptoms': symptoms})
+    return render(request, 'symptom_tracker.html', {'cycle': cycle, 'form': form, 'symptoms': symptoms})
