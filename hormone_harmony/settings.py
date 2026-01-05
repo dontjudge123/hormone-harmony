@@ -35,7 +35,21 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 if os.getenv('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS = [h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS').split(',') if h.strip()]
 else:
-    ALLOWED_HOSTS = []
+    # sensible development defaults
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] if DEBUG else []
+
+# Security-related settings (configurable via environment variables)
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0'))
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False') == 'True'
+
+# In production, require a strong secret key
+if not DEBUG:
+    from django.core.exceptions import ImproperlyConfigured
+
+    if (not SECRET_KEY) or len(SECRET_KEY) < 50 or SECRET_KEY.startswith('django-insecure-'):
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY must be set to a secure value in production')
 
 
 # Application definition
